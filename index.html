@@ -29,28 +29,6 @@
       </div>
     </div>
     <script>
-        // Function to connect the wallet using MetaMask
-        async function connectWallet() {
-            // Check if MetaMask is installed
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    // Request account access if needed
-                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-
-                    // Now the user's wallet is connected
-                    console.log("Connected account:", accounts[0]);
-                    alert("Wallet connected: " + accounts[0]);
-
-                    // You can now interact with the dApp via MetaMask
-                    window.location.href = "https://metamask.app.link/dapp/spontaneous-brigadeiros-cac2a7.netlify.app/";
-                } catch (error) {
-                    console.error("User rejected the connection request:", error);
-                }
-            } else {
-                alert("Please install MetaMask!");
-            }
-        }
-
       var container = document.querySelector("#unity-container");
       var canvas = document.querySelector("#unity-canvas");
       var loadingBar = document.querySelector("#unity-loading-bar");
@@ -144,5 +122,28 @@
       document.body.appendChild(script);
 
     </script>
+        <script>
+          // Function to connect the wallet using MetaMask
+          async function connectWallet() {
+              // Check if MetaMask is installed
+              if (typeof window.ethereum !== 'undefined') {
+                  try {
+                      // Request account access if needed
+                      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+  
+                      // Now the user's wallet is connected
+                      console.log("Connected account:", accounts[0]);
+                      alert("Wallet connected: " + accounts[0]);
+  
+                      // You can now interact with the dApp via MetaMask
+                      window.location.href = "https://metamask.app.link/dapp/spontaneous-brigadeiros-cac2a7.netlify.app/";
+                  } catch (error) {
+                      console.error("User rejected the connection request:", error);
+                  }
+              } else {
+                  alert("Please install MetaMask!");
+              }
+          }
+      </script>
   </body>
 </html>
