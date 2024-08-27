@@ -33,16 +33,24 @@
             }
     
             function isInMetaMaskApp() {
-                // A simple check for whether the script is running in the MetaMask mobile app
+                // Check if this script is running inside the MetaMask mobile app
                 return window.ethereum && window.ethereum.isMetaMask;
             }
     
-            // Auto-connect if in MetaMask app on mobile
-            if (isMobileDevice() && isInMetaMaskApp()) {
-                connectWallet();
-            }
-  
-          document.getElementById('connect-wallet').addEventListener('click', connectWallet);
+            // This function is triggered when the "Connect Wallet" button is clicked
+            document.getElementById('connect-wallet').addEventListener('click', function() {
+                if (isMobileDevice()) {
+                    // Redirect to MetaMask mobile app using deep link
+                    window.location.href = "https://metamask.app.link/dapp/main--spontaneous-brigadeiros-cac2a7.netlify.app/";
+                } else {
+                    // Attempt to connect wallet directly for desktop users or mobile browsers
+                    connectWallet();
+                }
+            });
+       // Auto-connect if in MetaMask app on mobile
+        if (isMobileDevice() && isInMetaMaskApp()) {
+            connectWallet();
+        }
       </script>
 
     <div id="unity-container" class="unity-desktop">
