@@ -12,39 +12,35 @@
         <button id="connect-wallet">Connect MetaMask Wallet</button>
 
         <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
-
         <script>
-          async function connectWallet() {
-              // Check for MetaMask (browser extension or mobile app)
-              if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
-                  try {
-                      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-                      console.log('Connected wallet:', accounts[0]);
-                      alert('Wallet connected: ' + accounts[0]);
-  
-                      // Now you can interact with your smart contracts or the blockchain
-                  } catch (error) {
-                      console.error('User rejected the connection request', error);
-                  }
-              } else {
-                  // Handle cases where MetaMask is not installed
-                  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  
-                  if (isMobile) {
-                      // Redirect to MetaMask mobile app using deep link
-                      window.location.href = "https://metamask.app.link/dapp/spontaneous-brigadeiros-cac2a7.netlify.app/";
-                  } else {
-                      // Show a custom message to install MetaMask on desktop
-                      alert('MetaMask is not installed. Please install MetaMask extension for your browser and try again.');
-  
-                      // Optionally, you can provide a link to install MetaMask
-                      const installMetamask = confirm("Do you want to install MetaMask?");
-                      if (installMetamask) {
-                          window.open('https://metamask.io/download.html', '_blank');
-                      }
-                  }
-              }
-          }
+            async function connectWallet() {
+                if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+                    try {
+                        // Request wallet connection
+                        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                        console.log('Connected wallet:', accounts[0]);
+                        alert('Wallet connected: ' + accounts[0]);
+                    } catch (error) {
+                        console.error('User rejected the connection request', error);
+                    }
+                } else {
+                    alert('MetaMask is not installed. Please install MetaMask and try again.');
+                }
+            }
+    
+            function isMobileDevice() {
+                return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            }
+    
+            function isInMetaMaskApp() {
+                // A simple check for whether the script is running in the MetaMask mobile app
+                return window.ethereum && window.ethereum.isMetaMask;
+            }
+    
+            // Auto-connect if in MetaMask app on mobile
+            if (isMobileDevice() && isInMetaMaskApp()) {
+                connectWallet();
+            }
   
           document.getElementById('connect-wallet').addEventListener('click', connectWallet);
       </script>
