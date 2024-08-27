@@ -4,52 +4,91 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | Wallet</title>
+    <style>
+      /* Basic styling for the transaction info */
+      #transaction-info {
+          margin-top: 20px;
+          padding: 10px;
+          border: 1px solid #ddd;
+          background-color: #f9f9f9;
+          font-family: Arial, sans-serif;
+      }
+  </style>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
   </head>
   <body>
         <!-- Button to open MetaMask -->
         <button id="connect-wallet">Connect MetaMask Wallet</button>
+    <!-- Container to display transaction information -->
+    <div id="transaction-info"></div>
 
-        <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
-        <script>
-            async function connectWallet() {
-                if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
-                    try {
-                        // Request wallet connection
-                        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-                        console.log('Connected wallet:', accounts[0]);
-                        alert('Wallet connected: ' + accounts[0]);
-                    } catch (error) {
-                        console.error('User rejected the connection request', error);
-                    }
-                } else {
-                    alert('MetaMask is not installed. Please install MetaMask and try again.');
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <script>
+        async function connectWalletAndSendTransaction() {
+            if (typeof window.ethereum !== 'undefined' || typeof window.web3 !== 'undefined') {
+                try {
+                    // Request wallet connection
+                    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                    console.log('Connected wallet:', accounts[0]);
+                    alert('Wallet connected: ' + accounts[0]);
+
+                    // Now, let's send a transaction
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
+                    
+                    // Define transaction details
+                    const tx = {
+                        to: '0xReceiverAddressHere', // Replace with the recipient's address
+                        value: ethers.utils.parseEther('0.01') // Amount in Ether (0.01 ETH here)
+                    };
+
+                    // Send transaction and get the transaction hash
+                    const transactionResponse = await signer.sendTransaction(tx);
+                    console.log('Transaction sent:', transactionResponse.hash);
+
+                    // Display the transaction hash on the dApp
+                    document.getElementById('transaction-info').innerText = `Transaction Hash: ${transactionResponse.hash}`;
+
+                    // Optionally, wait for the transaction to be mined (confirmed)
+                    const receipt = await transactionResponse.wait();
+                    console.log('Transaction confirmed:', receipt);
+
+                    // Update the UI to show confirmation
+                    document.getElementById('transaction-info').innerText += `\nTransaction confirmed in block: ${receipt.blockNumber}`;
+
+                } catch (error) {
+                    console.error('Error during transaction:', error);
+                    document.getElementById('transaction-info').innerText = `Transaction failed: ${error.message}`;
                 }
+            } else {
+                alert('MetaMask is not installed. Please install MetaMask and try again.');
             }
-    
-            function isMobileDevice() {
-                return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        }
+
+        function isMobileDevice() {
+            return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        }
+
+        function isInMetaMaskApp() {
+            // Check if this script is running inside the MetaMask mobile app
+            return window.ethereum && window.ethereum.isMetaMask;
+        }
+
+        // This function is triggered when the "Connect Wallet" button is clicked
+        document.getElementById('connect-wallet').addEventListener('click', function() {
+            if (isMobileDevice()) {
+                // Redirect to MetaMask mobile app using deep link
+                window.location.href = "https://metamask.app.link/dapp/main--spontaneous-brigadeiros-cac2a7.netlify.app/";
+            } else {
+                // Attempt to connect wallet and send transaction directly for desktop users or mobile browsers
+                connectWalletAndSendTransaction();
             }
-    
-            function isInMetaMaskApp() {
-                // Check if this script is running inside the MetaMask mobile app
-                return window.ethereum && window.ethereum.isMetaMask;
-            }
-    
-            // This function is triggered when the "Connect Wallet" button is clicked
-            document.getElementById('connect-wallet').addEventListener('click', function() {
-                if (isMobileDevice()) {
-                    // Redirect to MetaMask mobile app using deep link
-                    window.location.href = "https://metamask.app.link/dapp/main--spontaneous-brigadeiros-cac2a7.netlify.app/";
-                } else {
-                    // Attempt to connect wallet directly for desktop users or mobile browsers
-                    connectWallet();
-                }
-            });
-       // Auto-connect if in MetaMask app on mobile
+        });
+
+        // Auto-connect if in MetaMask app on mobile
         if (isMobileDevice() && isInMetaMaskApp()) {
-            connectWallet();
+            connectWalletAndSendTransaction();
         }
       </script>
 
